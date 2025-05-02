@@ -57,6 +57,11 @@ class RoomsController < ApplicationController
     end
   end
 
+  def summary
+    @room_count = Room.count
+  end
+  
+
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_room

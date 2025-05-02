@@ -1,9 +1,10 @@
 class MessagesController < ApplicationController
+  before_action :set_room, only: %i[ index new create ]
   before_action :set_message, only: %i[ show edit update destroy ]
 
   # GET /messages or /messages.json
   def index
-    @messages = Message.all
+    @messages = @room.messages
   end
 
   # GET /messages/1 or /messages/1.json
@@ -52,7 +53,7 @@ class MessagesController < ApplicationController
     @message.destroy!
 
     respond_to do |format|
-      format.html { redirect_to messages_path, status: :see_other, notice: "Message was successfully destroyed." }
+      format.html { redirect_to room_messages_path(@message.room), status: :see_other, notice: "Message was successfully destroyed." }
       format.json { head :no_content }
     end
   end
@@ -65,6 +66,14 @@ class MessagesController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def message_params
-      params.expect(message: [ :content ])
+      permitted_params = params.require(:message).permit(:content, :room_id)
+      permitted_params[:room_id] = params[:room_id] if params[:room_id]
+      permitted_params
     end
+
+
+    def set_room
+      @room = Room.find(params[:room_id])
+    end
+
 end
